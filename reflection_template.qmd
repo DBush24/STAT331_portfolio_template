@@ -1,6 +1,6 @@
 ---
 title: "STAT 331 Portfolio"
-author: "Your Name Goes Here"
+author: "Daniel Bush"
 format: 
   html: 
     self-contained: true
@@ -11,7 +11,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an __.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -24,6 +24,18 @@ execute:
 ```{r}
 #| label: wd-1-csv
 
+surveys <- read_csv(here::here("data","surveys.csv"),
+                    show_col_types = FALSE)
+
+# This code came from lab 2 question 1
+
+
+teachers <- read_csv(here::here("data",
+                                "teacher_evals.csv"),
+                    show_col_types = FALSE)
+
+# This code is from lab 3 question 2
+
 ```
 
 -   `xlsx`
@@ -31,6 +43,13 @@ execute:
 ```{r}
 #| label: wd-1-xlsx
 
+military <- read_xlsx(here::here("data", 
+                                 "gov_spending_per_capita.xlsx"), 
+                      sheet = "Share of Govt. spending", 
+                      skip  = 7, 
+                      n_max = 191)
+
+# This code is from practice activity 4 question 1
 ```
 
 -   `txt`
@@ -38,12 +57,34 @@ execute:
 ```{r}
 #| label: wd-1-txt
 
+ages_tab <- read_table (file = here::here("Week 2", "Check-ins", "Ages_Data", "ages_tab.txt"))
+
+# This code is from check in 2.3
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
 
 ```{r}
 #| label: wd-2
+
+teacher_evals_clean <- teachers |>
+  select(course_id,
+         teacher_id,
+         question_no,
+         no_participants,
+         resp_share,
+         SET_score_avg,
+         percent_failed_cur,
+         academic_degree,
+         seniority,
+         gender) |>
+  rename(sex = gender) |>
+  filter(no_participants >= 10) |>
+  mutate(teacher_id = as.character(teacher_id),
+         seniority = as.character(seniority))
+
+# This code came from question 5 lab 3
+
 
 ```
 
@@ -54,6 +95,14 @@ execute:
 ```{r}
 #| label: wd-3-numeric
 
+teacher_evals_clean |>
+  filter(seniority == 1) |>
+  group_by(teacher_id) |>
+  summarise(mean_score = mean(percent_failed_cur)) |>
+  arrange(desc(mean_score)) |>
+  slice(c(1, n()))
+
+#This code cem from lab 3 question 11
 ```
 
 -   character -- specifically a string (example must use functions from **stringr**)
@@ -61,6 +110,17 @@ execute:
 ```{r}
 #| label: wd-3-string
 
+get_fit_now_member |>
+  full_join(get_fit_now_check_in,
+            by = join_by("id" == "membership_id")) |>
+  filter(membership_status == "gold",
+         check_in_date == "20180109",
+         str_detect(id, "48Z")) |>
+  inner_join(person, by = join_by(person_id == id)) |>
+  inner_join(drivers_license, join_by(license_id == id)) |>
+  filter(str_detect(plate_number, "H42W"))
+
+# This code came from lab 5 "get fit now gym"
 ```
 
 -   factor
@@ -68,12 +128,16 @@ execute:
 ```{r}
 #| label: wd-3-factor
 
+
+
 ```
 
 -   date (example must use functions from **lubridate**)
 
 ```{r}
 #| label: wd-3-date
+
+
 
 ```
 
@@ -84,6 +148,7 @@ execute:
 ```{r}
 #| label: wd-4-numeric
 
+
 ```
 
 -   character -- specifically a string (example must use functions from **stringr**)
@@ -91,6 +156,22 @@ execute:
 ```{r}
 #| label: wd-4-string
 
+ca_childcare <- ca_childcare |> 
+  mutate(county_name = str_remove(county_name, " County")) |>
+  mutate(region = fct_collapse(county_name,
+                               "Superior California" = c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lassen", "Modoc", "Plumas", "Shasta", "Sierra", "Siskiyou", "Tehama", "Trinity"),
+                               "San Francisco Bay Area" = c("Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma"),
+                               "Northern San Joaquin Valley" = c("San Joaquin", "Stanislaus", "Merced"),
+                               "Sacramento Area" = c("El Dorado", "Placer", "Sacramento", "Sutter", "Yolo", "Yuba"),
+                               "Central Coast" = c("Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura"),
+                               "Northern California & Central Sierra" = c("Alpine", "Amador", "Calaveras", "Inyo", "Mariposa", "Mono", "Nevada", "Tuolumne"),
+                               "Southern California" = c("Los Angeles", "Orange", "Riverside", "San Bernardino", "San Diego", "Imperial"),
+                               "Central Valley" = c("Fresno", "Kern", "Kings", "Madera", "Tulare"),
+                               "Inland Empire" = c("Riverside", "San Bernardino"),
+                               "San Diego Area" = c("San Diego", "Imperial")
+  ))
+
+# This code is form lab 4 question 3
 ```
 
 -   factor (example must use functions from **forcats**)
@@ -98,6 +179,21 @@ execute:
 ```{r}
 #| label: wd-4-factor
 
+ca_childcare <- ca_childcare |> 
+  mutate(county_name = str_remove(county_name, " County")) |>
+  mutate(region = fct_collapse(county_name,
+                               "Superior California" = c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lassen", "Modoc", "Plumas", "Shasta", "Sierra", "Siskiyou", "Tehama", "Trinity"),
+                               "San Francisco Bay Area" = c("Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma"),
+                               "Northern San Joaquin Valley" = c("San Joaquin", "Stanislaus", "Merced"),
+                               "Sacramento Area" = c("El Dorado", "Placer", "Sacramento", "Sutter", "Yolo", "Yuba"),
+                               "Central Coast" = c("Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura"),
+                               "Northern California & Central Sierra" = c("Alpine", "Amador", "Calaveras", "Inyo", "Mariposa", "Mono", "Nevada", "Tuolumne"),
+                               "Southern California" = c("Los Angeles", "Orange", "Riverside", "San Bernardino", "San Diego", "Imperial"),
+                               "Central Valley" = c("Fresno", "Kern", "Kings", "Madera", "Tulare"),
+                               "Inland Empire" = c("Riverside", "San Bernardino"),
+                               "San Diego Area" = c("San Diego", "Imperial")
+  ))
+# This code came from lab 4 question 3 
 ```
 
 -   date (example must use functions from **lubridate**)
@@ -128,12 +224,37 @@ execute:
 ```{r}
 #| label: wd-5-inner
 
+get_fit_now_member |>
+  full_join(get_fit_now_check_in,
+            by = join_by("id" == "membership_id")) |>
+  filter(membership_status == "gold",
+         check_in_date == "20180109",
+         str_detect(id, "48Z")) |>
+  inner_join(person, by = join_by(person_id == id)) |>
+  inner_join(drivers_license, join_by(license_id == id)) |>
+  filter(str_detect(plate_number, "H42W"))
+
+# This code came from lab 5 "get fit now gym"
+
 ```
 
 -   `full_join()`
 
 ```{r}
 #| label: wd-5-full
+
+
+get_fit_now_member |>
+  full_join(get_fit_now_check_in,
+            by = join_by("id" == "membership_id")) |>
+  filter(membership_status == "gold",
+         check_in_date == "20180109",
+         str_detect(id, "48Z")) |>
+  inner_join(person, by = join_by(person_id == id)) |>
+  inner_join(drivers_license, join_by(license_id == id)) |>
+  filter(str_detect(plate_number, "H42W"))
+
+# This code came from lab 5 "get fit now gym"
 
 ```
 
@@ -160,6 +281,28 @@ execute:
 ```{r}
 #| label: wd-7-long
 
+ca_childcare %>%
+  pivot_longer(cols = mc_infant: mc_preschool,
+               names_to = "type_childcare",
+               values_to = "median_price") %>%
+  mutate(age_group = case_when(
+    type_childcare == "mc_infant" ~ "Infant",
+    type_childcare == "mc_toddler" ~ "Toddler",
+    type_childcare == "mc_preschool" ~ "Preschooler"),
+    Region = factor(region, 
+                        levels = c("San Francisco Bay Area", 
+                                            "Orange County", 
+                                            "Los Angeles County", 
+                                            "Northern San Joaquin Valley", 
+                                            "Central Coast", 
+                                            "Inland Empire", 
+                                            "Superior California", 
+                                            "Southern San Joaquin Valley", 
+                                            "San Diego - Imperial", 
+                                            "North Coast")))
+  
+# This code came from lab 4 question 6
+
 ```
 
 -   `pivot_wider()`
@@ -167,6 +310,17 @@ execute:
 ```{r}
 #| label: wd-7-wide
 
+ca_childcare %>%
+  filter(study_year == 2008 |
+         study_year == 2018) %>%
+  group_by(region, study_year) %>%
+  summarise(median_income =  median(mhi_2018)) %>%
+  pivot_wider(names_from = study_year,
+              values_from = median_income) %>%
+  arrange(by = "2018")
+
+#This code came from lab 4 question 4
+  
 ```
 
 ## Reproducibility
@@ -182,12 +336,39 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: r-2-1
 
+#| label: boxplot
+#| echo: true
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+  geom_jitter(color = "orange3", alpha = 0.25) + #reducing opacity of the points
+  geom_boxplot(outliers = FALSE) + 
+  labs(x = "Species",  #labeling axes
+       y = NULL, 
+       title = "Boxplot of Species vs Weight",
+       subtitle = "Weight (g)") +
+  theme(axis.text.x = element_text(angle = 45) ) + #tilting the x-axis 
+  theme(axis.text.y = element_text(angle = 45 )) #tilting the y-axis
+
+#http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+
+#This code came from lab 2 question 8, the comments were added after the initial submission
+
 ```
 
 -   Example of **dplyr** pipeline
 
 ```{r}
 #| label: r-2-2
+
+teacher_evals_clean |>
+  filter(question_no == 901) |>
+  group_by(teacher_id) |>
+  summarise(mean_score = mean(SET_score_avg)) |>
+  arrange(desc(mean_score)) |>
+  slice(c(1, n()))
+
+# This code came from lab 3 question 10
 
 ```
 
@@ -205,12 +386,22 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: r-3-example
 
+ca_childcare %>%
+  filter(study_year == 2018) %>%
+  group_by(region) %>%
+  summarise(median_price = median(mc_infant)) %>%
+  slice_min(order_by = median_price)
+
+# This code is from lab 4 question 5
+
 ```
 
 -   Example of function stops
 
 ```{r}
 #| label: r-3-function-stops
+
+
 
 ```
 
@@ -223,6 +414,17 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-1-num
 
+ggplot(data = surveys,
+       mapping = aes(x = weight, 
+                     y = hindfoot_length)) + 
+  geom_point(alpha = 0.5) +
+  facet_wrap(~species) + 
+  labs(x = "Weight (g)", 
+        y = NULL,
+        title = "Change in Hindfoot Length (mm) By Weight",
+        subtitle = "Hindfoot Length (mm)")
+
+# This code came from lab 2 question 4
 ```
 
 -   at least one numeric variable and one categorical variable
@@ -230,6 +432,42 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-2-num-cat
 
+ca_childcare %>%
+  pivot_longer(cols = mc_infant: mc_preschool,
+               names_to = "type_childcare",
+               values_to = "median_price") %>%
+  mutate(age_group = case_when(
+    type_childcare == "mc_infant" ~ "Infant",
+    type_childcare == "mc_toddler" ~ "Toddler",
+    type_childcare == "mc_preschool" ~ "Preschooler"),
+    Region = factor(region, 
+                        levels = c("San Francisco Bay Area", 
+                                            "Orange County", 
+                                            "Los Angeles County", 
+                                            "Northern San Joaquin Valley", 
+                                            "Central Coast", 
+                                            "Inland Empire", 
+                                            "Superior California", 
+                                            "Southern San Joaquin Valley", 
+                                            "San Diego - Imperial", 
+                                            "North Coast")))  %>%
+             
+ggplot(aes(x = study_year,
+           y = median_price,
+           color = region)) +
+  geom_point() + 
+  geom_smooth() +
+  facet_wrap(~type_childcare,
+             nrow = 1) + 
+  scale_x_continuous(breaks = seq(2008, 2018, by = 2)) +
+  labs(x = "Study Year",
+       y = "",
+       title = "Weekly Median Price for Center-Based Childcare ($)") +
+  theme(axis.text.x = element_text(size = 5))
+            
+# This code came from lab 4 question 6 
+
+edit graph 
 ```
 
 -   at least two categorical variables
@@ -237,12 +475,25 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-2-cat
 
+ggplot(data = teacher_evals_compare,
+       mapping = aes(x = sen_level,
+                     fill = SET_level)) +
+  geom_bar() +
+  labs(x = "Seniority of Instructor",
+       y = "",
+       subtitle = "Number of Sections") +
+scale_fill_manual(values = c("excellent" = "steelblue",
+                             "standard" = "orange")) 
+
+#This code came from challenge 3
+
 ```
 
 -   dates (timeseries plot)
 
 ```{r}
 #| label: dvs-2-date
+
 
 ```
 
@@ -253,12 +504,45 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-2-1
 
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+  geom_jitter(color = "orange3", alpha = 0.25) + #reducing opacity of the points
+  geom_boxplot(outliers = FALSE) + 
+  labs(x = "Species",  #labeling axes
+       y = NULL, 
+       title = "Boxplot of Species vs Weight",
+       subtitle = "Weight (g)") +
+  theme(axis.text.x = element_text(angle = 45) ) + #tilting the x-axis 
+  theme(axis.text.y = element_text(angle = 45 )) #tilting the y-axis
+
+#http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+
+#This code came from lab 2 question 8, the comments were added after the initial submission
+
+
 ```
 
 -   I can modify the text in my plot to be more readable
 
 ```{r}
 #| label: dvs-2-2
+
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+  geom_jitter(color = "orange3", alpha = 0.25) + #reducing opacity of the points
+  geom_boxplot(outliers = FALSE) + 
+  labs(x = "Species",  #labeling axes
+       y = NULL, 
+       title = "Boxplot of Species vs Weight",
+       subtitle = "Weight (g)") +
+  theme(axis.text.x = element_text(angle = 45) ) + #tilting the x-axis 
+  theme(axis.text.y = element_text(angle = 45 )) #tilting the y-axis
+
+#http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+
+#This code came from lab 2 question 8, the comments were added after the initial submission
 
 ```
 
@@ -275,6 +559,19 @@ I've done this in the following provided assignments:
 
 ```{r}
 #| label: dvs-3-1
+ 
+ggplot(data = teacher_evals_compare,
+       mapping = aes(x = sen_level,
+                     fill = SET_level)) +
+  geom_bar() +
+  labs(x = "Seniority of Instructor",
+       y = "",
+       subtitle = "Number of Sections") +
+scale_fill_manual(values = c("excellent" = "steelblue",
+                             "standard" = "orange")) 
+
+#This code came from challenge 3
+
 
 ```
 
@@ -290,6 +587,20 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-3-3
 
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+  geom_jitter(color = "orange3", alpha = 0.25) +
+  geom_boxplot(outliers = FALSE) + 
+  labs(x = "", 
+       y = NULL, 
+       title = "Boxplot of Species vs Weight (g)",
+       subtitle = "Types of Rodents") +
+  coord_flip()
+
+#https://stackoverflow.com/questions/76543808/how-to-flip-geom-boxplot-and-rescale-axis
+
+#This code came from lab 2 question 16
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
@@ -299,6 +610,15 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-4-summarize
 
+teacher_evals_clean |>
+  filter(seniority == 1) |>
+  group_by(teacher_id) |>
+  summarise(mean_score = mean(percent_failed_cur)) |>
+  arrange(desc(mean_score)) |>
+  slice(c(1, n()))
+
+#This code cem from lab 3 question 11
+
 ```
 
 -   Example using `across()`
@@ -306,6 +626,11 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-4-across
 
+teacher_evals_clean |>
+  summarise(across(.cols = course_id:teacher_id,
+                   .fns = ~ n_distinct(.x))) 
+
+#This code came from lab 3 question 6
 ```
 
 **DVS-5: I can find summaries of variables across multiple groups.**
@@ -331,6 +656,18 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-6-1
 
+teacher_evals_clean |>
+  select(academic_degree,
+         seniority,
+         sex,
+         teacher_id) |>
+  group_by(sex,
+           academic_degree) |>
+  summarise(mean_seniority = mean(seniority),
+            num_teachers = n_distinct(teacher_id),
+            .groups = "drop")
+
+#This code came from lab 3 question 8
 ```
 
 -   Example 2
@@ -338,6 +675,14 @@ I've done this in the following provided assignments:
 ```{r}
 #| label: dvs-6-2
 
+teacher_evals_clean |>
+  filter(question_no == 901) |>
+  group_by(teacher_id) |>
+  summarise(mean_score = mean(SET_score_avg)) |>
+  arrange(desc(mean_score)) |>
+  slice(c(1, n()))
+
+#This code came from lab 3 question 9
 ```
 
 **DVS-7: I show creativity in my tables.**
