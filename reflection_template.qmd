@@ -57,7 +57,10 @@ military <- read_xlsx(here::here("data",
 ```{r}
 #| label: wd-1-txt
 
-ages_tab <- read_table (file = here::here("Week 2", "Check-ins", "Ages_Data", "ages_tab.txt"))
+ages_tab <- read_table (file = here::here("Week 2",
+                                          "Check-ins",
+                                          "Ages_Data",
+                                          "ages_tab.txt"))
 
 # This code is from check in 2.3
 ```
@@ -137,6 +140,17 @@ get_fit_now_member |>
 ```{r}
 #| label: wd-3-date
 
+get_fit_now_member |>
+  full_join(get_fit_now_check_in,
+            by = join_by("id" == "membership_id")) |>
+  filter(membership_status == "gold",
+         ymd(check_in_date) == "2018-01-09",
+         str_detect(id, "48Z")) |>
+  inner_join(person, by = join_by(person_id == id)) |>
+  inner_join(drivers_license, join_by(license_id == id)) |>
+  filter(str_detect(plate_number, "H42W"))
+
+# This code came from lab 5 "get fit now gym". I edited the dates so its a function from lubridate
 
 
 ```
@@ -171,7 +185,7 @@ ca_childcare <- ca_childcare |>
                                "San Diego Area" = c("San Diego", "Imperial")
   ))
 
-# This code is form lab 4 question 3
+# This code is from lab 4 question 3
 ```
 
 -   factor (example must use functions from **forcats**)
@@ -182,17 +196,17 @@ ca_childcare <- ca_childcare |>
 ca_childcare <- ca_childcare |> 
   mutate(county_name = str_remove(county_name, " County")) |>
   mutate(region = fct_collapse(county_name,
-                               "Superior California" = c("Butte", "Colusa", "Del Norte", "Glenn", "Humboldt", "Lassen", "Modoc", "Plumas", "Shasta", "Sierra", "Siskiyou", "Tehama", "Trinity"),
-                               "San Francisco Bay Area" = c("Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma"),
-                               "Northern San Joaquin Valley" = c("San Joaquin", "Stanislaus", "Merced"),
-                               "Sacramento Area" = c("El Dorado", "Placer", "Sacramento", "Sutter", "Yolo", "Yuba"),
+                               "Superior California" = c("Butte", "Colusa", "El Dorado", "Glenn", "Lassen", "Modoc", "Nevada", "Placer", "Plumas", "Sacramento", "Shasta", "Sierra", "Siskiyou", "Sutter", "Tehama", "Yolo", "Yuba"),
+                               "North Coast" = c("Del Norte", "Humboldt", "Lake", "Mendocino", "Napa", "Sonoma", "Trinity"),
+                               "San Francisco Bay Area" = c("Alameda", "Contra Costa", "Marin", "San Francisco", "San Mateo", "Santa Clara", "Solano"),
+                               "Northern San Joaquin Valley" = c("Alpine", "Amador", "Calaveras", "Madera", "Mariposa", "Merced", "Mono", "San Joaquin", "Stanislaus", "Tuolumne"),
                                "Central Coast" = c("Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura"),
-                               "Northern California & Central Sierra" = c("Alpine", "Amador", "Calaveras", "Inyo", "Mariposa", "Mono", "Nevada", "Tuolumne"),
-                               "Southern California" = c("Los Angeles", "Orange", "Riverside", "San Bernardino", "San Diego", "Imperial"),
-                               "Central Valley" = c("Fresno", "Kern", "Kings", "Madera", "Tulare"),
+                               "Southern San Joaquin Valley" = c("Fresno", "Inyo", "Kern", "Kings", "Tulare"),
                                "Inland Empire" = c("Riverside", "San Bernardino"),
-                               "San Diego Area" = c("San Diego", "Imperial")
-  ))
+                               "Los Angeles County" = c("Los Angeles"), 
+                               "Orange County" = c("Orange"), 
+                               "San Diego - Imperial" = c("San Diego", "Imperial")))
+
 # This code came from lab 4 question 3 
 ```
 
@@ -462,12 +476,13 @@ ggplot(aes(x = study_year,
   scale_x_continuous(breaks = seq(2008, 2018, by = 2)) +
   labs(x = "Study Year",
        y = "",
-       title = "Weekly Median Price for Center-Based Childcare ($)") +
+       title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region") +
   theme(axis.text.x = element_text(size = 5))
-            
+          
 # This code came from lab 4 question 6 
 
-edit graph 
+
 ```
 
 -   at least two categorical variables
@@ -550,6 +565,42 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-2-3
+
+ca_childcare %>%
+  pivot_longer(cols = mc_infant: mc_preschool,
+               names_to = "type_childcare",
+               values_to = "median_price") %>%
+  mutate(age_group = case_when(
+    type_childcare == "mc_infant" ~ "Infant",
+    type_childcare == "mc_toddler" ~ "Toddler",
+    type_childcare == "mc_preschool" ~ "Preschooler"),
+    Region = factor(region, 
+                        levels = c("San Francisco Bay Area", 
+                                            "Orange County", 
+                                            "Los Angeles County", 
+                                            "Northern San Joaquin Valley", 
+                                            "Central Coast", 
+                                            "Inland Empire", 
+                                            "Superior California", 
+                                            "Southern San Joaquin Valley", 
+                                            "San Diego - Imperial", 
+                                            "North Coast")))  %>%
+             
+ggplot(aes(x = study_year,
+           y = median_price,
+           color = region)) +
+  geom_point() + 
+  geom_smooth() +
+  facet_wrap(~type_childcare,
+             nrow = 1) + 
+  scale_x_continuous(breaks = seq(2008, 2018, by = 2)) +
+  labs(x = "Study Year",
+       y = "",
+       title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region") +
+  theme(axis.text.x = element_text(size = 5))
+          
+# This code came from lab 4 question 6 
 
 ```
 
@@ -710,6 +761,17 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-1-one-call
 
+get_fit_now_member |>
+  full_join(get_fit_now_check_in,
+            by = join_by("id" == "membership_id")) |>
+  filter(membership_status == "gold",
+         check_in_date == "20180109",
+         str_detect(id, "48Z")) |>
+  inner_join(person, by = join_by(person_id == id)) |>
+  inner_join(drivers_license, join_by(license_id == id)) |>
+  filter(str_detect(plate_number, "H42W"))
+
+# This code came from lab 5 "get fit now gym"
 ```
 
 -   `across()`
@@ -717,12 +779,17 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-1-across
 
+
+
+
 ```
 
 -   `map()` functions
 
 ```{r}
 #| label: pe-1-map-1
+
+
 
 ```
 
@@ -732,6 +799,8 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: pe-2-1
+
+
 
 ```
 
@@ -772,6 +841,13 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-4-1
 
+crime_scene_report |>
+  filter(date == 20180115,
+         type == "murder",
+         city == "SQL City") |>
+  pull(description)
+
+#This code came from lab 5 inspecting-crime-scene-report
 ```
 
 -   I can connect a data wrangling pipeline into a `ggplot()`
@@ -779,6 +855,41 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-4-2
 
+ca_childcare %>%
+  pivot_longer(cols = mc_infant: mc_preschool,
+               names_to = "type_childcare",
+               values_to = "median_price") %>%
+  mutate(age_group = case_when(
+    type_childcare == "mc_infant" ~ "Infant",
+    type_childcare == "mc_toddler" ~ "Toddler",
+    type_childcare == "mc_preschool" ~ "Preschooler"),
+    Region = factor(region, 
+                        levels = c("San Francisco Bay Area", 
+                                            "Orange County", 
+                                            "Los Angeles County", 
+                                            "Northern San Joaquin Valley", 
+                                            "Central Coast", 
+                                            "Inland Empire", 
+                                            "Superior California", 
+                                            "Southern San Joaquin Valley", 
+                                            "San Diego - Imperial", 
+                                            "North Coast")))  %>%
+             
+ggplot(aes(x = study_year,
+           y = median_price,
+           color = region)) +
+  geom_point() + 
+  geom_smooth() +
+  facet_wrap(~type_childcare,
+             nrow = 1) + 
+  scale_x_continuous(breaks = seq(2008, 2018, by = 2)) +
+  labs(x = "Study Year",
+       y = "",
+       title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region") +
+  theme(axis.text.x = element_text(size = 5))
+          
+# This code came from lab 4 question 6 
 ```
 
 ## Data Simulation & Statisical Models
