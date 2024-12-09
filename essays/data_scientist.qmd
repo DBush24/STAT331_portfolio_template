@@ -9,3 +9,5 @@ editor: visual
 -   Focus specifically on data science concepts and the skills we employed in learning them, not a laundry list of topics that you learned (those are in the syllabus, so I know them already).
 
 -   Focus on a small number of specific areas of growth for you that happened in STAT 331. Identify at least one artifact in your portfolio that illustrates each area of growth and explain how this artifact shows growth in the way you are describing.
+
+During this I improves as a practitioner and a student of data science in multiple ways. One of the more notable aspects I saw growth in was my efficiency. Prior to this class I had limited coding experience and did not recognize the importance of writing efficient code. As I stated in the efficiency essay, finding out I could call the filter function one time and then filter multiple variables blew my mind. I applied this idea throughout the class and learned a lot about efficiency. I also felt that my precision when writing code improved. The coder and developer role during the practice activities drastically improved my ability to talk through my code and made me focus on writing precise code.

@@ -6,16 +6,20 @@ editor: visual
 
 **Answer each of the following questions with *one sentence* including a brief explanation.**
 
-1. Finish the sentence with another student’s name: "If [Name of Student] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
+1.  Finish the sentence with another student's name: "If \[Name of Student\] doesn't earn an A, then nobody should, because..." Explain your choice and your reasoning.
 
+2.  What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
 
-2. What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+3.  What was the easiest part of the class for you? Explain why.
 
+4.  What part of the class surprised or interested you the most? Explain why.
 
-3. What was the easiest part of the class for you? Explain why.
+5.  Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
 
+<!-- -->
 
-4. What part of the class surprised or interested you the most? Explain why.
-
-
-5. Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+1.  If Sid does not earn an A, then nobody should, because out of all my classmates I have worked with, he has had the strongest understanding of the material I have seen. He also has a way of explaining code that makes it easier for me to understand while getting the point across. His ability to teach the material demonstrates his A level of understanding.
+2.  The most difficult part of the class for me was using all the different types of joins, it was hard for me to visualize when I should use each type of join.
+3.  The easiest part of the class for me was working with ggplot, creating graphs seemed to come easier to me as I generally spent less time on those problems.
+4.  The most interesting part of the class was using filters, specifically in lab 5 I thought it was very interesting how we were able to write code to single in on one person out of a large data set.
+5.  Get ahead on the labs so you can ask for help before it is to late, there were multiple times where I started the lab to late and ended up using my late token on the challenge because I was running out of time.
